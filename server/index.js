@@ -1,11 +1,10 @@
 import express from "express";
 import setupRoutes from "./routes/router.js";
-import uniqid from "uniqid";
 import { Server } from "socket.io";
 import Messenger from "./models/messengerModel.js";
 
 const app = express();
-const port = 3001;
+const port = 3004;
 
 setupRoutes(app);
 
@@ -14,18 +13,18 @@ const server = app.listen(port, () => console.log(`✅ Server listening at http:
 const io = new Server(server);
 
 const messages = Messenger.getAll();
-const newMessages = Messenger.create();
 
 io.on("connect", (socket) => {
   console.log("user connected");
   // [ONE] ::TODO connect to the DB, get all messages and send them to the client
   // under the event 'initialMessageList'
   socket.emit("initialMessageList", messages);
-
+  
   // receive message from client (on)
   // messageFromClient event is emitted by client
-  socket.on("messageFromClient", (newMessage) => {
+  socket.on("messageFromClient", () => {
     // add message to messages array
+    const newMessage = Messenger.create();
    
     // log new message from client
     console.log("new message from a client: ", newMessage);
